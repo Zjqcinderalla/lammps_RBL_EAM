@@ -1,0 +1,56 @@
+clear
+#设置jump执行入口标志
+label lata 
+variable a index 2.3 2.4 2.5 2.6 2.7 2.75 2.80 2.81 2.82 2.83 2.835 2.84 2.845 2.85 2.855 2.86 2.865 2.87 2.875 2.88 2.89 2.90 2.92 2.94 2.96 2.98 3.0 3.1 3.2 3.3 3.4 3.5 3.6 3.7 3.8 3.9 4.0 4.1 4.2 4.4 4.5 4.8 5.1 5.5 5.9 6.1
+
+
+#模型基本设置
+units               metal                       
+atom_style          atomic                      
+boundary            p p p                       
+#以变量a的值创建盒子并填充原子
+lattice             bcc    $a                      
+region              box block 0 15 0 15 0 15      
+create_box      1   box                       
+create_atoms    1   box                      
+mass            1   55.84   
+
+
+# pair_style      eam/fs                          
+# pair_coeff      *  *    Fe_mm.eam.fs   Fe 
+
+variable   cut_core_off  equal  4.0     # r_c
+variable   batch_size_p  equal  10     # b_p
+pair_style     eam/fs/rbl   ${cut_core_off}  ${batch_size_p}                
+pair_coeff     *  *      Fe_mm.eam.fs   Fe
+
+velocity      all   create  300.0  4928459
+
+#设置邻居列表参数
+neighbor      0.3  bin                     
+neigh_modify  every 20 delay 0 check yes
+
+
+#nvt系综
+timestep       0.001
+# fix 1---nvt
+fix            1  all  nvt  temp  300.0  300.0  0.1   
+
+thermo         1000                           
+thermo_style   custom step pe ke temp vol press 
+run            10000                          
+
+#计算单原子能量=总势能/原子个数
+variable Ecoh equal pe/count(all)  
+print    "Lattice parameter (A): $a" 
+print    "%% Cohesive Energy (eV/atom)= ${Ecoh}"
+#清屏
+clear
+#获取下一个a的值
+next a
+#跳转到in.Fe文件lata处重新运行
+jump in_bcc_rbl.Fe lata
+
+
+# lammps教程：以计算Fe晶格常数为例介绍jump命令使用
+# https://blog.51cto.com/u_15478372/4891364
