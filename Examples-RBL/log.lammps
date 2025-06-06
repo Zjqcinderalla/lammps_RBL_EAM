@@ -1,0 +1,5 @@
+LAMMPS (7 Aug 2019)
+# FCC lattice - Cu
+clear
+
+log log_fcc_eam_cpu_time.lammps append

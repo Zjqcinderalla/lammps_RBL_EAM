@@ -1,0 +1,35 @@
+# BCC lattice - Fe
+clear
+# initial configuration
+variable       xx       equal    10
+variable       yy       equal    10
+variable       zz       equal    10
+variable     temp_set   equal    300
+units		      metal
+atom_style	      atomic
+boundary          p p p
+
+lattice           bcc   2.855
+region		      box block 0 ${xx} 0 ${yy} 0 ${zz}
+create_box    1   box
+create_atoms  1   box 
+
+# pair_style types cut_core_off  batch_size
+pair_style	  eam/fs/rbl   2.6   10
+pair_coeff	    *   *      Fe_mm.eam.fs  Fe
+
+
+velocity           all   create ${temp_set} 4928459
+neighbor	       2.0   bin
+neigh_modify       every 5 delay 0 check yes
+
+fix            1    all   nvt  temp  ${temp_set}  ${temp_set}  0.1
+
+thermo		   100
+thermo_style   custom step temp pe ke press
+thermo_modify  norm no
+
+timestep	    0.001
+run		        1000
+
+
