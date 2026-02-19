@@ -2,7 +2,7 @@
 Random batch method for molecular dynamics with EAM potential
 
 # Usage Tutorial:
-**LAMMPS Version**: lammps-7Aug19  
+**LAMMPS Version**: lammps-7Aug19 or others version 
 
 1. Download "USER-RBL-EAM" to the `src` folder in the LAMMPS source code:  
    ```bash
